@@ -1,6 +1,6 @@
 all: g2z.so
 
-g2z.so: g2z.go module.h
+g2z.so: g2z.go module.go agent.go cfuncs.go log.go log.h module.h zbxtypes.h 
 	go build -x -buildmode=c-shared -o g2z.so
 
 clean:
