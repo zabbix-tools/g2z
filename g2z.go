@@ -1,17 +1,21 @@
 /*
+ * https://github.com/jbuberel/buildmodeshared
  * https://docs.google.com/document/d/1nr-TQHw_er6GOQRsF6T43GGhFDelrAP0NqSS_00RgZQ/edit#heading=h.fwmrrio0df0i
- * https://github.com/golang/go/issues/256
- * https://github.com/golang/go/issues/11058
  */
 package main
 
 /*
+// some symbols (within the Zabbix agent) won't resolve at link-time
+// we can ignore these and resolve at runtime
 #cgo LDFLAGS: -Wl,--unresolved-symbols=ignore-in-object-files
 
 #include <stdint.h>
+
+// zabbix agent headers
 #include "module.h"
 #include "log.h"
 
+// non-variadic wrapper for zabbix_log
 static inline void g2z_log(int level, char *format) {
 	return zabbix_log(level, format);
 }

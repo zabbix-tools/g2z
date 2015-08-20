@@ -1,10 +1,15 @@
+all: g2z.so
+
 g2z.so: g2z.go module.h
 	go build -x -buildmode=c-shared -o g2z.so
 
 clean:
 	rm -f g2z.so g2z.h
 
-docker:
+docker-build:
 	docker build -t cavaliercoder/g2z .
 
-.PHONY: clean docker
+docker-run:
+	docker run --rm -it -v $(PWD):/usr/src/g2z -w /usr/src/g2z cavaliercoder/g2z
+
+.PHONY: all clean docker-build docker-run
