@@ -1,4 +1,4 @@
-package main
+package g2z
 
 /*
 // zabbix agent headers
@@ -40,9 +40,14 @@ func zbx_module_api_version() int {
 
 //export zbx_module_init
 func zbx_module_init() int {
-	Log(LogLevelInformation, "Hello world!")
+	Log(LogLevelInformation, "This is zbx_module_init()")
 
 	return ModuleOK
+}
+
+func init() {
+	Log(LogLevelInformation, "this is g2z.module.init()")
+
 }
 
 //export zbx_module_uninit
@@ -57,6 +62,8 @@ func zbx_module_item_timeout(timeout int) {
 
 //export zbx_module_item_list
 func zbx_module_item_list() *C.ZBX_METRIC {
+	Log(LogLevelInformation, "this is zbx_module_item_list()")
+
 	callback := C.agent_item_callback(unsafe.Pointer(C.zbx_module_route_item))
 
 	return &[]C.ZBX_METRIC{
@@ -75,7 +82,7 @@ func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 	r := marshallAgentRequest(request)
 
 	for i, param := range r.Params {
-		Log(LogLevelInformation, "Param %d: %s\n", i, param)
+		Log(LogLevelInformation, "Param %d: %s", i, param)
 	}
 
 	stringResponse(result, "Tits...Tits McGee")

@@ -6,5 +6,9 @@ RUN \
 	 apt-get update && \
 	 apt-get install zabbix-agent
 
-RUN echo "LoadModulePath=/usr/src/g2z" >> /etc/zabbix/zabbix_agentd.conf && \
-    echo "LoadModule=g2z.so" >> /etc/zabbix/zabbix_agentd.conf
+RUN echo "LoadModulePath=/usr/src/g2z/dummy" >> /etc/zabbix/zabbix_agentd.conf && \
+    echo "LoadModule=dummy.so" >> /etc/zabbix/zabbix_agentd.conf
+
+RUN \
+	mkdir -p /go/src/github.com/cavaliercoder/ && \
+	ln -s /usr/src/g2z /go/src/github.com/cavaliercoder/g2z

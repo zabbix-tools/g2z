@@ -1,7 +1,6 @@
-package main
+package g2z
 
 /*
-
 #include "log.h"
 
 // non-variadic wrapper for zabbix_log
