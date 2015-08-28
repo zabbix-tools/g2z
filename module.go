@@ -1,12 +1,36 @@
+/*
+ * g2z - Zabbix module adapter for Go
+ * Copyright (C) 2015 - Ryan Armstrong <ryan@cavaliercoder.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package g2z
 
 /*
+// some symbols (within the Zabbix agent) won't resolve at link-time
+// we can ignore these and resolve at runtime
+#cgo LDFLAGS: -Wl,--unresolved-symbols=ignore-in-object-files
+
 // zabbix agent headers
 #include <stdint.h>
 #include "module.h"
 
+// pointer to agent item callback type for go
 typedef int (*agent_item_callback)();
 
+// item callback router function defined in cfuncs.go
 int zbx_module_route_item(AGENT_REQUEST *request, AGENT_RESULT *result);
 */
 import "C"
@@ -15,22 +39,14 @@ import (
 	"unsafe"
 )
 
-const (
-	ModuleOK   = int(C.ZBX_MODULE_OK)
-	ModuleFail = int(C.ZBX_MODULE_FAIL)
-)
-
-const (
-	ReturnOK   = int(C.SYSINFO_RET_OK)
-	ReturnFail = int(C.SYSINFO_RET_FAIL)
-)
-
-type Metric struct {
-	Key        string
-	TestParams string
-	HasParams  bool
+type AgentRequest struct {
+	Key    string
+	Params []string
 }
 
+// Timeout is used by Zabbix to specify the timeout settings in Zabbix
+// configuration file that the module should obey. Here, the “timeout”
+// parameter is in seconds.
 var Timeout int
 
 //export zbx_module_api_version
@@ -40,52 +56,55 @@ func zbx_module_api_version() int {
 
 //export zbx_module_init
 func zbx_module_init() int {
-	Log(LogLevelInformation, "This is zbx_module_init()")
+	// call all registered init hanlders
+	for _, handler := range initHandlers {
+		LogDebugf("Calling registered zbx_module_init() handler")
+		if err := handler(); err != nil {
+			LogCriticalf("%s", err.Error())
+			return C.ZBX_MODULE_FAIL
+		}
+	}
 
-	return ModuleOK
-}
-
-func init() {
-	Log(LogLevelInformation, "this is g2z.module.init()")
-
+	return C.ZBX_MODULE_OK
 }
 
 //export zbx_module_uninit
-func zbx_module_uninit() C.int {
-	return C.int(ModuleOK)
+func zbx_module_uninit() int {
+	// call all registered uninit hanlders
+	for _, handler := range uninitHandlers {
+		LogDebugf("Calling registered zbx_module_uninit() handler")
+		if err := handler(); err != nil {
+			LogCriticalf("%s", err.Error())
+			return C.ZBX_MODULE_FAIL
+		}
+	}
+
+	return C.ZBX_MODULE_OK
 }
 
 //export zbx_module_item_timeout
 func zbx_module_item_timeout(timeout int) {
+	// set global timeout var
 	Timeout = timeout
 }
 
 //export zbx_module_item_list
 func zbx_module_item_list() *C.ZBX_METRIC {
-	Log(LogLevelInformation, "this is zbx_module_item_list()")
-
+	// route all item key calls through zbx_module_route_item() -> route_item()
 	callback := C.agent_item_callback(unsafe.Pointer(C.zbx_module_route_item))
 
-	return &[]C.ZBX_METRIC{
-		{
-			key:        C.CString("go"),
+	// create null-terminated array of metrics
+	i := 0
+	metrics := make([]C.ZBX_METRIC, len(itemHandlers)+1)
+	for _, item := range itemHandlers {
+		metrics[i] = C.ZBX_METRIC{
+			key:        C.CString(item.Key),
 			flags:      C.CF_HAVEPARAMS,
 			function:   callback,
-			test_param: C.CString(""),
-		},
-		{},
-	}[0]
-}
-
-//export route_item
-func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
-	r := marshallAgentRequest(request)
-
-	for i, param := range r.Params {
-		Log(LogLevelInformation, "Param %d: %s", i, param)
+			test_param: C.CString(item.TestParams),
+		}
+		i++
 	}
 
-	stringResponse(result, "Tits...Tits McGee")
-
-	return C.SYSINFO_RET_OK
+	return &metrics[0]
 }
