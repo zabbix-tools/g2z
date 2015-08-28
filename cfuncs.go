@@ -23,6 +23,9 @@ package g2z
 #include <stdint.h>
 #include "module.h"
 
+// go function to route all agent requests
+int route_item(AGENT_REQUEST*, AGENT_RESULT*);
+
 // entry point for all agent items
 // defined here to prevent error: multiple definition of `zbx_module_route_item'
 int zbx_module_route_item(AGENT_REQUEST *request, AGENT_RESULT *result)
