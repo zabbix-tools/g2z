@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package g2z
 
 /*
@@ -27,7 +28,7 @@ package g2z
 #include <stdint.h>
 #include "module.h"
 
-// pointer to agent item callback type for go
+// go binding for a pointer to an agent item callback
 typedef int (*agent_item_callback)();
 
 // item callback router function defined in cfuncs.go
@@ -39,15 +40,16 @@ import (
 	"unsafe"
 )
 
+// A AgentRequest represents an agent item request received from a Zabbix server or perhaps
+// from `zabbix_get`.
 type AgentRequest struct {
-	Key    string
+	// Key is the requested agent key (E.g. `agent.version`).
+	Key string
+
+	// Params is a slice of strings containing each parameter passed in the agent request for the
+	// specified key (E.g. `dummy.echo[<param0>,<param1>]`)
 	Params []string
 }
-
-// Timeout is used by Zabbix to specify the timeout settings in Zabbix
-// configuration file that the module should obey. Here, the “timeout”
-// parameter is in seconds.
-var Timeout int
 
 //export zbx_module_api_version
 func zbx_module_api_version() int {

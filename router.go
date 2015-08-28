@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package g2z
 
 /*
@@ -35,7 +36,7 @@ import (
 	"fmt"
 )
 
-// called by zbx_module_route_item, the entrypoint for all registered items
+// route_item is called by zbx_module_route_item(), the entrypoint for all registered items.
 //
 //export route_item
 func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
@@ -99,7 +100,7 @@ func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 	return C.SYSINFO_RET_OK
 }
 
-// add an error message to an agent result struct
+// setMessageResult adds an error message to an agent result struct
 func setMessageResult(result *C.AGENT_RESULT, format string, a ...interface{}) {
 	result._type = C.AR_MESSAGE
 	result.msg = C.CString(fmt.Sprintf(format, a...))

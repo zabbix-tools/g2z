@@ -28,6 +28,10 @@ docker-build:
 	docker build -t cavaliercoder/g2z .
 
 docker-run: docker-build
-	docker run --rm -it -v $(PWD):/usr/src/g2z -w /usr/src/g2z cavaliercoder/g2z
+	docker run --rm -it \
+		-p 6060:6060 \
+		-v $(PWD):/usr/src/g2z \
+		-w /usr/src/g2z \
+		cavaliercoder/g2z
 
 .PHONY: all clean docker-build docker-run

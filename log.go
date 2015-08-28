@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package g2z
 
 /*
@@ -32,26 +33,37 @@ import (
 	"fmt"
 )
 
+// logf formats according to a format specifier and writes to the Zabbix log file.
 func logf(level int, format string, a ...interface{}) {
 	C.g2z_log(C.int(level), C.CString(fmt.Sprintf(format, a...)))
 }
 
+// LogCriticalf formats according to a format specifier and writes to the Zabbix log file with a
+// critical message.
 func LogCriticalf(format string, a ...interface{}) {
 	logf(C.LOG_LEVEL_CRIT, format, a...)
 }
 
+// LogErrorf formats according to a format specifier and writes to the Zabbix log file with an
+// error message.
 func LogErrorf(format string, a ...interface{}) {
 	logf(C.LOG_LEVEL_ERR, format, a...)
 }
 
+// LogWarningf formats according to a format specifier and writes to the Zabbix log file with a
+// warning message.
 func LogWarningf(format string, a ...interface{}) {
 	logf(C.LOG_LEVEL_WARNING, format, a...)
 }
 
+// LogDebugf formats according to a format specifier and writes to the Zabbix log file with a
+// debug message.
 func LogDebugf(format string, a ...interface{}) {
 	logf(C.LOG_LEVEL_DEBUG, format, a...)
 }
 
+// LogInfof formats according to a format specifier and writes to the Zabbix log file with an
+// informational message.
 func LogInfof(format string, a ...interface{}) {
 	logf(C.LOG_LEVEL_INFORMATION, format, a...)
 }
