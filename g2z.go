@@ -100,7 +100,7 @@ func registerItem(key string, testParams string, callback interface{}) {
 }
 
 // RegisterStringItem registers an agent item key, its test parameters and a callback function with
-// Zabbix for a key with returns a string.
+// Zabbix for a key which returns a string.
 //
 // This function should only be called from `init()`
 func RegisterStringItem(key string, testParams string, callback StringItemHandlerFunc) {
@@ -108,7 +108,7 @@ func RegisterStringItem(key string, testParams string, callback StringItemHandle
 }
 
 // RegisterUint64Item registers an agent item key, its test parameters and a callback function with
-// Zabbix for a key with returns an unsigned integer.
+// Zabbix for a key which returns an unsigned integer.
 //
 // This function should only be called from `init()`
 func RegisterUint64Item(key string, testParams string, callback Uint64ItemHandlerFunc) {
@@ -116,7 +116,7 @@ func RegisterUint64Item(key string, testParams string, callback Uint64ItemHandle
 }
 
 // RegisterDoubleItem registers an agent item key, its test parameters and a callback function with
-// Zabbix for a key with returns a double precision floating point integer.
+// Zabbix for a key which returns a double precision floating point integer.
 //
 // This function should only be called from `init()`
 func RegisterDoubleItem(key string, testParams string, callback DoubleItemHandlerFunc) {
@@ -124,7 +124,7 @@ func RegisterDoubleItem(key string, testParams string, callback DoubleItemHandle
 }
 
 // RegisterDiscoveryItem registers an agent item key, its test parameters and a callback function with
-// Zabbix for a key with returns DiscoveryData.
+// Zabbix for a key which returns DiscoveryData.
 //
 // This function should only be called from `init()`
 func RegisterDiscoveryItem(key string, testParams string, callback DiscoveryItemHandlerFunc) {
