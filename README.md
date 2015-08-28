@@ -26,17 +26,30 @@ This project aims to deliver the best of both worlds; fast, native C libraries,
 written in a easier high-level language (Go), with all the dependencies bundled
 in to a standalone library file.
 
+
 ## Requirements
 
 * Go v1.5.0+
 * Zabbix v2.2.0+
-* C build tools
+* C build tools (only tested on GCC)
+
+
+## Installation
+
+Once you have installed [Go lang](https://golang.org/doc/install), and
+configured your `$GOPATH`, simply run:
+
+```bash
+$ go get github.com/cavaliercoder/g2z
+```
+
 
 ## Usage
 
 Here's a quick high-level run down on how to create a Zabbix agent module. An
 [example module](https://github.com/cavaliercoder/g2z/blob/master/dummy/dummy.go)
-is included with the g2z sources.
+is included with the g2z sources which mimics the dummy C module published by
+Zabbix.
 
 To begin, create a mandatory `main()` entry point to your library and import g2z:
 
@@ -46,7 +59,7 @@ package main
 import "github.com/cavaliercoder/g2z"
 
 func main() {
-	panic("THIS_SHOULD_NEVER_HAPPEN")
+    panic("THIS_SHOULD_NEVER_HAPPEN")
 }
 
 ```
@@ -64,7 +77,7 @@ Your functions signature must match one of:
 
 ```go
 func Echo(request *g2z.AgentRequest) (string, error) {
-	return strings.Join(request.Params, " "), nil
+    return strings.Join(request.Params, " "), nil
 }
 
 ```
@@ -73,7 +86,7 @@ Create an `init()` function to register your functions as agent item keys:
 
 ```go
 func init() {
-	g2z.RegisterStringItem("go.echo", "Hello world!", Echo)
+    g2z.RegisterStringItem("go.echo", "Hello world!", Echo)
 }
 
 ```
@@ -89,6 +102,7 @@ Load your `.so` module file into Zabbix as per the
 
 Test your item keys with `zabbix_agentd -p` or
 [zabbix_agent_bench](https://github.com/cavaliercoder/zabbix_agent_bench).
+
 
 ## License
 
