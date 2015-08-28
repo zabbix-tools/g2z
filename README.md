@@ -4,9 +4,9 @@ This project aims to provide [Go](https://golang.org/) bindings for creating
 native Zabbix modules.
 
 Zabbix modules are an effective way of extending the Zabbix agent and server to
-monitor resources which are not natively support by Zabbix. 
+monitor resources which are not natively supported by Zabbix. 
 
-There are currently two ways to to extend Zabbix:
+There are currently two ways to extend Zabbix:
 
 * [User Parameters](https://www.zabbix.com/documentation/2.4/manual/config/items/userparameters)
 * and [Loadable Modules](https://www.zabbix.com/documentation/2.4/manual/config/items/loadablemodules?s[]=module)
@@ -23,8 +23,8 @@ is a great deal more than writing a script in a higher level language like
 Perl.
 
 This project aims to deliver the best of both worlds; fast, native C libraries,
-written in a easier high-level language (Go), with all the dependencies bundled
-in to a standalone library file.
+written in an easier high-level language (Go), with all the dependencies bundled
+into a standalone library file.
 
 
 ## Requirements
@@ -67,13 +67,6 @@ func main() {
 Write a Go function which accepts a `*g2z.AgentRequest` parameter and returns
 either a `string`, `uint64`, `float64` or `g2z.DiscoveryData` as the first
 parameter, and an `error` as the second return parameter.
-
-Your functions signature must match one of:
-
-* `g2z.StringItemHandlerFunc`
-* `g2z.Uint64ItemHandlerFunc`
-* `g2z.DoubleItemHandlerFunc`
-* or `g2z.DiscoveryItemHandlerFunc`
 
 ```go
 func Echo(request *g2z.AgentRequest) (string, error) {
