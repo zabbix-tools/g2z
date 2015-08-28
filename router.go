@@ -58,7 +58,7 @@ func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 		return C.SYSINFO_RET_FAIL
 	}
 
-	// call handler
+	// call handler function
 	switch item.Callback.(type) {
 	case StringItemHandlerFunc:
 		if v, err := item.Callback.(StringItemHandlerFunc)(req); err != nil {
@@ -93,7 +93,7 @@ func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 			return C.SYSINFO_RET_FAIL
 		} else {
 			result._type = C.AR_STRING
-			result.str = C.CString(v.JSON())
+			result.str = C.CString(v.Json())
 		}
 	}
 

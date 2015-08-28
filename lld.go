@@ -37,9 +37,9 @@ type DiscoveryItem map[string]string
 // Zabbix discovery macro name.
 var macroIllegalPattern = regexp.MustCompile(`[^A-Z0-9_]+`)
 
-// JSON converts a DiscoveryData struct into a JSON encoded string, compatible with Zabbix
+// Json converts a DiscoveryData struct into a JSON encoded string, compatible with Zabbix
 // Low-Level discovery rules from v2.2.0 and above.
-func (c DiscoveryData) JSON() string {
+func (c DiscoveryData) Json() string {
 	b := bytes.Buffer{}
 
 	b.WriteString("{\n\t\"data\":[")

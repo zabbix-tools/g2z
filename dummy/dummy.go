@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+// Package main is a shared library with sample Zabbix bindings which may be loaded into a
+// Zabbix agent or server using the `LoadModule` directive.
 package main
 
 import (
@@ -32,13 +34,16 @@ import (
 	"time"
 )
 
-// entry point is mandatory, although never called
+// main is a mandatory entry point, although it is never called.
 func main() {
 	panic("THIS_SHOULD_NEVER_HAPPEN")
 }
 
-// register item keys and handlers
-// no other work should be done here
+// init is a mandatory initialization function which must be used exclusively to register Zabbix
+// module function handlers. It is called when Zabbix calls `dlopen()` to load this Go module.
+//
+// No other work should be performed in this function. All other initialization activities should
+// be executed with an InitHandlerFunc.
 func init() {
 	g2z.RegisterInitHandler(InitModule)
 	g2z.RegisterUninitHandler(UninitModule)
@@ -49,24 +54,31 @@ func init() {
 	g2z.RegisterDiscoveryItem("go.cpu.discovery", "", DiscoverCpus)
 }
 
+// InitModule is a InitHandlerFunc which simply add an entry to the Zabbix log.
 func InitModule() error {
 	g2z.LogInfof("Dummy module initialized")
 	return nil
 }
 
+// UninitModule is an UninitHandlerFunc which simply add an entry to the Zabbix log.
 func UninitModule() error {
 	g2z.LogInfof("Dummy module uninitialized")
 	return nil
 }
 
+// Ping is a Uint64ItemHandlerFunc for key `go.ping` which simply returns 1.
 func Ping(request *g2z.AgentRequest) (uint64, error) {
 	return 1, nil
 }
 
+// Ping is a StringItemHandlerFunc for key `go.echo` which concatenates and returns whatever
+// strings are provided as request parameters.
 func Echo(request *g2z.AgentRequest) (string, error) {
 	return strings.Join(request.Params, " "), nil
 }
 
+// Random is a DoubleItemHandlerFunc for key `go.random` which returns a random floating point
+// integer within the range of the first and second parameter values.
 func Random(request *g2z.AgentRequest) (float64, error) {
 	// validate param count
 	if len(request.Params) != 2 {
@@ -85,13 +97,17 @@ func Random(request *g2z.AgentRequest) (float64, error) {
 		return 0.00, err
 	}
 
+	// validate range
 	if to < from {
 		return 0.00, errors.New("Invalid range specified")
 	}
 
+	// return a random number in range
 	return from + ((to - from) * rand.New(rand.NewSource(time.Now().UnixNano())).Float64()), nil
 }
 
+// DiscoveryCpus is a DiscoveryItemHandlerFunc for key `go.cpu.discovery` which returns JSON
+// encoding discovery data for all CPUs identified on the host.
 func DiscoverCpus(request *g2z.AgentRequest) (g2z.DiscoveryData, error) {
 	// init discovery data
 	d := make(g2z.DiscoveryData, 0)
