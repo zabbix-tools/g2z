@@ -23,6 +23,10 @@ import (
 	"github.com/cavaliercoder/g2z"
 )
 
+func Example_uint64() {
+	panic("THIS_SHOULD_NEVER_HAPPEN")
+}
+
 func init() {
 	g2z.RegisterUint64Item("go.ping", "", Ping)
 }

@@ -23,7 +23,7 @@ import (
 	"github.com/cavaliercoder/g2z"
 )
 
-func main() {
+func Example_double() {
 	panic("THIS_SHOULD_NEVER_HAPPEN")
 }
 

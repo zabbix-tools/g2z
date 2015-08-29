@@ -24,6 +24,10 @@ import (
 	"github.com/cavaliercoder/g2z"
 )
 
+func Example_discovery() {
+	panic("THIS_SHOULD_NEVER_HAPPEN")
+}
+
 func init() {
 	g2z.RegisterDiscoveryItem("go.discovery", "", Discover)
 }

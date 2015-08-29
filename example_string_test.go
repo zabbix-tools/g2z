@@ -24,6 +24,10 @@ import (
 	"strings"
 )
 
+func Example_string() {
+	panic("THIS_SHOULD_NEVER_HAPPEN")
+}
+
 func init() {
 	g2z.RegisterStringItem("go.echo", "Hello world!", Echo)
 }
