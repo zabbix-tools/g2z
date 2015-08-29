@@ -74,58 +74,58 @@ var itemHandlers map[string]item = make(map[string]item, 0)
 
 // RegisterInitHandler should be called from init() to register an InitHandlerFunc which will be
 // called when Zabbix calls zbx_module_init().
-func RegisterInitHandler(fn InitHandlerFunc) {
+func RegisterInitHandler(handler InitHandlerFunc) {
 	LogDebugf("Registering init handler")
-	initHandlers = append(initHandlers, fn)
+	initHandlers = append(initHandlers, handler)
 }
 
 // RegisterUninitHandler should be called from init() to register an UninitHandlerFunc which will
 // be called when Zabbix calls zbx_module_uninit().
-func RegisterUninitHandler(fn UninitHandlerFunc) {
+func RegisterUninitHandler(handler UninitHandlerFunc) {
 	LogDebugf("Registering uninit handler")
-	uninitHandlers = append(uninitHandlers, fn)
+	uninitHandlers = append(uninitHandlers, handler)
 }
 
 // registerItems registers an agent item key, its test parameters and a callback function with
 // Zabbix.
-func registerItem(key string, testParams string, callback interface{}) {
+func registerItem(key string, testParams string, handler interface{}) {
 	k := item{
 		Key:        key,
 		TestParams: testParams,
-		Callback:   callback,
+		Callback:   handler,
 	}
 
 	itemHandlers[key] = k
 }
 
-// RegisterStringItem registers an agent item key, its test parameters and a callback function with
+// RegisterStringItem registers an agent item key, its test parameters and a handler function with
 // Zabbix for a key which returns a string.
 //
 // This function should only be called from `init()`
-func RegisterStringItem(key string, testParams string, callback StringItemHandlerFunc) {
-	registerItem(key, testParams, callback)
+func RegisterStringItem(key string, testParams string, handler StringItemHandlerFunc) {
+	registerItem(key, testParams, handler)
 }
 
-// RegisterUint64Item registers an agent item key, its test parameters and a callback function with
+// RegisterUint64Item registers an agent item key, its test parameters and a handler function with
 // Zabbix for a key which returns an unsigned integer.
 //
 // This function should only be called from `init()`
-func RegisterUint64Item(key string, testParams string, callback Uint64ItemHandlerFunc) {
-	registerItem(key, testParams, callback)
+func RegisterUint64Item(key string, testParams string, handler Uint64ItemHandlerFunc) {
+	registerItem(key, testParams, handler)
 }
 
-// RegisterDoubleItem registers an agent item key, its test parameters and a callback function with
+// RegisterDoubleItem registers an agent item key, its test parameters and a handler function with
 // Zabbix for a key which returns a double precision floating point integer.
 //
 // This function should only be called from `init()`
-func RegisterDoubleItem(key string, testParams string, callback DoubleItemHandlerFunc) {
-	registerItem(key, testParams, callback)
+func RegisterDoubleItem(key string, testParams string, handler DoubleItemHandlerFunc) {
+	registerItem(key, testParams, handler)
 }
 
-// RegisterDiscoveryItem registers an agent item key, its test parameters and a callback function with
+// RegisterDiscoveryItem registers an agent item key, its test parameters and a handler function with
 // Zabbix for a key which returns DiscoveryData.
 //
 // This function should only be called from `init()`
-func RegisterDiscoveryItem(key string, testParams string, callback DiscoveryItemHandlerFunc) {
-	registerItem(key, testParams, callback)
+func RegisterDiscoveryItem(key string, testParams string, handler DiscoveryItemHandlerFunc) {
+	registerItem(key, testParams, handler)
 }

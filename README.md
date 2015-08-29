@@ -47,11 +47,11 @@ configured your `$GOPATH`, simply run:
 ## Usage
 
 Here's a quick high-level run down on how to create a Zabbix agent module. For 
-further guidance, there is an
+further guidance, there is full API documentation available on
+[godoc.org](http://godoc.org/github.com/cavaliercoder/g2z) and an
 [example module](https://github.com/cavaliercoder/g2z/blob/master/dummy/dummy.go)
-included with the g2z sources which mimics the dummy C module published by
-Zabbix and full API documentation available on
-[godoc.org](http://godoc.org/github.com/cavaliercoder/g2z).
+included in the g2z sources which implements the dummy C module published by
+Zabbix.
 
 To begin, create a mandatory `main()` entry point to your library and import
 g2z. The `main()` function will never be called but is a requirement for
