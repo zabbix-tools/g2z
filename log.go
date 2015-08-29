@@ -23,9 +23,17 @@ package g2z
 #include <stdlib.h>
 #include "log.h"
 
+// ignore missing symbol if not loaded via Zabbix
+#pragma weak    __zbx_zabbix_log
+
 // non-variadic wrapper for C.zabbix_log
-static void g2z_log(int level, char *format) {
-	return zabbix_log(level, format);
+static void g2z_log(int level, const char *format)
+{
+	void (*fptr)(int, const char*, ...);
+
+	// check if zabbix_log() is resolvable
+    if ((fptr = zabbix_log) != 0)
+        (*fptr)(level, format);
 }
 */
 import "C"
