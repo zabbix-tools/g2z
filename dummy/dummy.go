@@ -28,7 +28,6 @@ import (
 	"github.com/cavaliercoder/g2z"
 	"math/rand"
 	"os"
-	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -50,7 +49,7 @@ func init() {
 	g2z.RegisterUninitHandler(UninitModule)
 
 	g2z.RegisterUint64Item("go.ping", "", Ping)
-	g2z.RegisterStringItem("go.echo", "Hello world!", Echo)
+	g2z.RegisterStringItem("go.echo", "Hello,world!", Echo)
 	g2z.RegisterDoubleItem("go.random", "0,100", Random)
 	g2z.RegisterDiscoveryItem("go.cpu.discovery", "", DiscoverCpus)
 	g2z.RegisterStringItem("go.version", "", Version)
@@ -117,24 +116,28 @@ func DiscoverCpus(request *g2z.AgentRequest) (g2z.DiscoveryData, error) {
 	// open /proc/cpuinfo
 	f, err := os.Open("/proc/cpuinfo")
 	if err != nil {
+		g2z.LogErrorf("Failed to open /proc/cpuinfo with: %s", err.Error())
 		return nil, err
 	}
 	defer f.Close()
 
 	// read each line
-	i := make(g2z.DiscoveryItem, 0)
-	pattern := regexp.MustCompile(`^(.*?)\s*:\s*(.*)$`)
+	item := make(g2z.DiscoveryItem, 0)
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		s := scanner.Text()
 
 		// if line is blank, append the last populated item
 		if s == "" {
-			d = append(d, i)
-			i = make(g2z.DiscoveryItem, 0)
-		} else if matches := pattern.FindAllStringSubmatch(s, -1); len(matches) > 0 {
-			// check if line is a "key    : val" line
-			i[matches[0][1]] = matches[0][2]
+			d = append(d, item)
+			item = make(g2z.DiscoveryItem, 0)
+		} else if i := strings.Index(s, ":"); i != -1 {
+			key := strings.TrimRight(s[:i], "\t")
+			if i == len(s)-1 {
+				item[key] = ""
+			} else {
+				item[key] = s[i+2:]
+			}
 		} else {
 			return nil, errors.New(fmt.Sprintf("Unparsable line in /proc/cpuinfo: \"%s\"", s))
 		}
