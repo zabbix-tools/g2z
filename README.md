@@ -1,4 +1,4 @@
-# g2z - Zabbix module adapter for Go [![GoDoc](https://godoc.org/github.com/cavaliercoder/g2z?status.svg)](http://godoc.org/github.com/cavaliercoder/g2z)
+# g2z - Zabbix module adapter for Go [![GoDoc](https://godoc.org/github.com/cavaliercoder/g2z?status.svg)](http://godoc.org/github.com/cavaliercoder/g2z) [![Build Status](https://travis-ci.org/cavaliercoder/g2z.svg?branch=master)](https://travis-ci.org/cavaliercoder/g2z)
 
 This project provides [Go](https://golang.org/) bindings for creating native
 Zabbix modules.
