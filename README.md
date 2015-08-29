@@ -92,7 +92,7 @@ func init() {
 ```
 
 There are a few different item types you may register. Each requires an agent
-item key name, some test parameters and a handler function to Zabbix to call
+item key name, some test parameters and a handler function for Zabbix to call
 when it receives a request for the registered item key.
 
 Compile your project with:

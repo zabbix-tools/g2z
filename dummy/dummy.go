@@ -73,7 +73,7 @@ func Ping(request *g2z.AgentRequest) (uint64, error) {
 	return 1, nil
 }
 
-// Ping is a StringItemHandlerFunc for key `go.echo` which concatenates and returns whatever
+// Echo is a StringItemHandlerFunc for key `go.echo` which concatenates and returns whatever
 // strings are provided as request parameters.
 func Echo(request *g2z.AgentRequest) (string, error) {
 	return strings.Join(request.Params, " "), nil
@@ -108,7 +108,7 @@ func Random(request *g2z.AgentRequest) (float64, error) {
 	return from + ((to - from) * rand.New(rand.NewSource(time.Now().UnixNano())).Float64()), nil
 }
 
-// DiscoveryCpus is a DiscoveryItemHandlerFunc for key `go.cpu.discovery` which returns JSON
+// DiscoverCpus is a DiscoveryItemHandlerFunc for key `go.cpu.discovery` which returns JSON
 // encoded discovery data for all CPUs identified on the host in /proc/cpuinfo.
 func DiscoverCpus(request *g2z.AgentRequest) (g2z.DiscoveryData, error) {
 	// init discovery data
