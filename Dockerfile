@@ -19,16 +19,35 @@ FROM golang:1.5
 
 # install Zabbix agent
 RUN \
-	 wget http://repo.zabbix.com/zabbix/2.2/debian/pool/main/z/zabbix-release/zabbix-release_2.2-1+wheezy_all.deb && \
-	 dpkg -i zabbix-release_2.2-1+wheezy_all.deb && \
-	 apt-get update && \
-	 apt-get install zabbix-agent
+    wget -q http://repo.zabbix.com/zabbix/2.2/debian/pool/main/z/zabbix-release/zabbix-release_2.2-1+wheezy_all.deb && \
+    dpkg -i zabbix-release_2.2-1+wheezy_all.deb && \
+    apt-get update -y && \
+    apt-get install -y zabbix-agent zabbix-get zabbix-sender && \
+    mkdir /var/run/zabbix && \
+    chown zabbix:zabbix /var/run/zabbix
+
+# install utilities
+RUN apt-get install -y vim
+
+# install zabbix_agent_bench
+RUN \
+    wget -q http://sourceforge.net/projects/zabbixagentbench/files/linux/zabbix_agent_bench-0.3.0.x86_64.tar.gz && \
+    tar -xzvf zabbix_agent_bench-0.3.0.x86_64.tar.gz && \
+    mv zabbix_agent_bench-0.3.0.x86_64/zabbix_agent_bench /usr/bin/zabbix_agent_bench
 
 # install dummy module in Zabbix agent
-RUN echo "LoadModulePath=/usr/src/g2z/dummy" >> /etc/zabbix/zabbix_agentd.conf && \
+RUN \
+    echo "LoadModulePath=/usr/src/g2z/dummy" >> /etc/zabbix/zabbix_agentd.conf && \
     echo "LoadModule=dummy.so" >> /etc/zabbix/zabbix_agentd.conf
+
+# install UserParameters for benchmarking
+RUN \
+    echo "UserParameter=up.ping,/bin/echo 1" >> /etc/zabbix/zabbix_agentd.conf && \
+    echo "UserParameter=up.echo[*],/bin/echo \$1 \$2 \$3 \$4" >> /etc/zabbix/zabbix_agentd.conf && \
+    echo "#!/usr/bin/perl -w\nprint \"1\\\\n\";\n" >> /usr/bin/perl_ping.pl && chmod 755 /usr/bin/perl_ping.pl && \
+    echo "UserParameter=perl.ping,/usr/bin/perl_ping.pl" >> /etc/zabbix/zabbix_agentd.conf
 
 # symlink g2z into GOPATH
 RUN \
-	mkdir -p /go/src/github.com/cavaliercoder/ && \
-	ln -s /usr/src/g2z /go/src/github.com/cavaliercoder/g2z
+    mkdir -p /go/src/github.com/cavaliercoder/ && \
+    ln -s /usr/src/g2z /go/src/github.com/cavaliercoder/g2z

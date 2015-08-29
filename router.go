@@ -36,7 +36,7 @@ import (
 	"fmt"
 )
 
-// route_item is called by zbx_module_route_item(), the entrypoint for all registered items.
+// route_item is the entry point for all registered items.
 //
 //export route_item
 func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
@@ -61,15 +61,17 @@ func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 	// call handler function
 	switch item.Callback.(type) {
 	case StringItemHandlerFunc:
+		LogDebugf("Calling StringItemHandlerFunc for key: %s", req.Key)
 		if v, err := item.Callback.(StringItemHandlerFunc)(req); err != nil {
 			setMessageResult(result, err.Error())
 			return C.SYSINFO_RET_FAIL
 		} else {
 			result._type = C.AR_STRING
-			result.str = C.CString(v)
+			result.str = C.CString(v) // freed by Zabbix
 		}
 
 	case Uint64ItemHandlerFunc:
+		LogDebugf("Calling Uint64ItemHandlerFunc for key: %s", req.Key)
 		if v, err := item.Callback.(Uint64ItemHandlerFunc)(req); err != nil {
 			setMessageResult(result, err.Error())
 			return C.SYSINFO_RET_FAIL
@@ -79,6 +81,7 @@ func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 		}
 
 	case DoubleItemHandlerFunc:
+		LogDebugf("Calling DoubleItemHandlerFunc for key: %s", req.Key)
 		if v, err := item.Callback.(DoubleItemHandlerFunc)(req); err != nil {
 			setMessageResult(result, err.Error())
 			return C.SYSINFO_RET_FAIL
@@ -88,12 +91,13 @@ func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 		}
 
 	case DiscoveryItemHandlerFunc:
+		LogDebugf("Calling DiscoveryItemHandlerFunc for key: %s", req.Key)
 		if v, err := item.Callback.(DiscoveryItemHandlerFunc)(req); err != nil {
 			setMessageResult(result, err.Error())
 			return C.SYSINFO_RET_FAIL
 		} else {
 			result._type = C.AR_STRING
-			result.str = C.CString(v.Json())
+			result.str = C.CString(v.Json()) // freed by Zabbix
 		}
 	}
 
@@ -103,5 +107,5 @@ func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 // setMessageResult adds an error message to an agent result struct
 func setMessageResult(result *C.AGENT_RESULT, format string, a ...interface{}) {
 	result._type = C.AR_MESSAGE
-	result.msg = C.CString(fmt.Sprintf(format, a...))
+	result.msg = C.CString(fmt.Sprintf(format, a...)) // freed by Zabbix
 }

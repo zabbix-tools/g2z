@@ -29,14 +29,15 @@ package g2z
 #include "module.h"
 
 // go binding for a pointer to an agent item callback
-typedef int (*agent_item_callback)();
+typedef int (*agent_item_handler)(AGENT_REQUEST*, AGENT_RESULT*);
 
-// item callback router function defined in cfuncs.go
-int zbx_module_route_item(AGENT_REQUEST *request, AGENT_RESULT *result);
+// item callback router function defined in router.go
+int route_item(AGENT_REQUEST *request, AGENT_RESULT *result);
 */
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -58,9 +59,13 @@ func zbx_module_api_version() int {
 
 //export zbx_module_init
 func zbx_module_init() int {
+	LogDebugf("Initializing g2z module")
+	LogDebugf(" - runtime version:\t%s", runtime.Version())
+
 	// call all registered init hanlders
-	for _, handler := range initHandlers {
-		LogDebugf("Calling registered zbx_module_init() handler")
+	handlerCount := len(initHandlers)
+	for i, handler := range initHandlers {
+		LogDebugf("Calling registered zbx_module_init() handler %d of %d", i+1, handlerCount)
 		if err := handler(); err != nil {
 			LogCriticalf("%s", err.Error())
 			return C.ZBX_MODULE_FAIL
@@ -73,8 +78,9 @@ func zbx_module_init() int {
 //export zbx_module_uninit
 func zbx_module_uninit() int {
 	// call all registered uninit hanlders
-	for _, handler := range uninitHandlers {
-		LogDebugf("Calling registered zbx_module_uninit() handler")
+	handlerCount := len(uninitHandlers)
+	for i, handler := range uninitHandlers {
+		LogDebugf("Calling registered zbx_module_uninit() handler %d of %d", i+1, handlerCount)
 		if err := handler(); err != nil {
 			LogCriticalf("%s", err.Error())
 			return C.ZBX_MODULE_FAIL
@@ -87,23 +93,26 @@ func zbx_module_uninit() int {
 //export zbx_module_item_timeout
 func zbx_module_item_timeout(timeout int) {
 	// set global timeout var
+	LogDebugf("Setting module timeout to %d seconds", timeout)
 	Timeout = timeout
 }
 
 //export zbx_module_item_list
 func zbx_module_item_list() *C.ZBX_METRIC {
-	// route all item key calls through zbx_module_route_item() -> route_item()
-	callback := C.agent_item_callback(unsafe.Pointer(C.zbx_module_route_item))
+	LogDebugf("Registering %d item handlers", len(itemHandlers))
 
-	// create null-terminated array of metrics
+	// route all item key calls through route_item()
+	router := C.agent_item_handler(unsafe.Pointer(C.route_item))
+
+	// create null-terminated array of C.ZBX_METRICS
 	i := 0
 	metrics := make([]C.ZBX_METRIC, len(itemHandlers)+1)
 	for _, item := range itemHandlers {
 		metrics[i] = C.ZBX_METRIC{
-			key:        C.CString(item.Key),
+			key:        C.CString(item.Key), // freed by Zabbix
 			flags:      C.CF_HAVEPARAMS,
-			function:   callback,
-			test_param: C.CString(item.TestParams),
+			function:   router,
+			test_param: C.CString(item.TestParams), // freed by Zabbix
 		}
 		i++
 	}

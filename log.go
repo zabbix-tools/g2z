@@ -20,9 +20,10 @@
 package g2z
 
 /*
+#include <stdlib.h>
 #include "log.h"
 
-// non-variadic wrapper for zabbix_log
+// non-variadic wrapper for C.zabbix_log
 static void g2z_log(int level, char *format) {
 	return zabbix_log(level, format);
 }
@@ -31,11 +32,15 @@ import "C"
 
 import (
 	"fmt"
+	"unsafe"
 )
 
 // logf formats according to a format specifier and writes to the Zabbix log file.
 func logf(level int, format string, a ...interface{}) {
-	C.g2z_log(C.int(level), C.CString(fmt.Sprintf(format, a...)))
+	// TODO: Add runtime check for configured log level
+	str := C.CString(fmt.Sprintf(format, a...))
+	C.g2z_log(C.int(level), str)
+	C.free(unsafe.Pointer(str))
 }
 
 // LogCriticalf formats according to a format specifier and writes to the Zabbix log file with a

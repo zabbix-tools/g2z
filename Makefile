@@ -17,7 +17,7 @@
 
 all: dummy/dummy.so
 
-dummy/dummy.so: g2z.go module.go cfuncs.go lld.go log.go router.go log.h module.h zbxtypes.h dummy/dummy.go
+dummy/dummy.so: g2z.go module.go lld.go log.go router.go log.h module.h zbxtypes.h dummy/dummy.go
 	cd dummy && go build -x -buildmode=c-shared -o dummy.so
 
 clean:
@@ -30,6 +30,7 @@ docker-build:
 docker-run: docker-build
 	docker run --rm -it \
 		-p 6060:6060 \
+		-p 10050:10050 \
 		-v $(PWD):/usr/src/g2z \
 		-w /usr/src/g2z \
 		cavaliercoder/g2z

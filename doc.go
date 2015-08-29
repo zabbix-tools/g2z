@@ -52,6 +52,17 @@ Compile your shared library with:
 
 	$ go build -buildmode=c-shared
 
+You should see the required Zabbix module functions exported in your shared
+library
+
+	$ nm -g
+	...
+	0000000000111830 T zbx_module_api_version
+	0000000000111860 T zbx_module_init
+	00000000001118f0 T zbx_module_item_list
+	00000000001118c0 T zbx_module_item_timeout
+	0000000000111890 T zbx_module_uninit
+
 Load your `.so` module file into Zabbix as per the Zabbix manual
 
 	https://www.zabbix.com/documentation/2.2/manual/config/items/loadablemodules#configuration_parameters

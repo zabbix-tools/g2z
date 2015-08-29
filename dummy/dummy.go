@@ -29,6 +29,7 @@ import (
 	"math/rand"
 	"os"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -52,6 +53,7 @@ func init() {
 	g2z.RegisterStringItem("go.echo", "Hello world!", Echo)
 	g2z.RegisterDoubleItem("go.random", "0,100", Random)
 	g2z.RegisterDiscoveryItem("go.cpu.discovery", "", DiscoverCpus)
+	g2z.RegisterStringItem("go.version", "", Version)
 }
 
 // InitModule is a InitHandlerFunc which simply adds an entry to the Zabbix log.
@@ -139,4 +141,10 @@ func DiscoverCpus(request *g2z.AgentRequest) (g2z.DiscoveryData, error) {
 	}
 
 	return d, nil
+}
+
+// Version is a StringItemHandlerFunc for key `go.version` which returns the Go runtime version
+// string for the loaded module.
+func Version(request *g2z.AgentRequest) (string, error) {
+	return runtime.Version(), nil
 }
