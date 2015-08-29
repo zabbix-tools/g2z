@@ -27,13 +27,13 @@ RUN \
     chown zabbix:zabbix /var/run/zabbix
 
 # install utilities
-RUN apt-get install -y vim
+RUN apt-get install -y vim strace lsof
 
 # install zabbix_agent_bench
 RUN \
-    wget -q http://sourceforge.net/projects/zabbixagentbench/files/linux/zabbix_agent_bench-0.3.0.x86_64.tar.gz && \
-    tar -xzvf zabbix_agent_bench-0.3.0.x86_64.tar.gz && \
-    mv zabbix_agent_bench-0.3.0.x86_64/zabbix_agent_bench /usr/bin/zabbix_agent_bench
+    wget -q http://sourceforge.net/projects/zabbixagentbench/files/linux/zabbix_agent_bench-0.4.0.x86_64.tar.gz && \
+    tar -xzvf zabbix_agent_bench-0.4.0.x86_64.tar.gz && \
+    mv zabbix_agent_bench-0.4.0.x86_64/zabbix_agent_bench /usr/bin/zabbix_agent_bench
 
 # install dummy module in Zabbix agent
 RUN \

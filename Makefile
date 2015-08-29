@@ -37,6 +37,7 @@ docker-run: docker-build
 	docker run --rm -it \
 		-v $(PWD):/usr/src/g2z \
 		-w /usr/src/g2z \
+		--privileged \
 		cavaliercoder/g2z
 
 .PHONY: all g2z dummy clean clean-all docker-build docker-run
