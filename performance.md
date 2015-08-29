@@ -1,8 +1,9 @@
 # g2z Performance
 
-TL;DR: Go modules can be __up to__ 15% slower than C modules but who cares when
-they hammer through 2000+ NVPS on a low powered VM and are 7x faster than a
-loading a simple Perl script in a UserParameter.
+TL;DR: Go modules seem to perform on par with C modules with a margin of error
+for implementation differences. They hammer through 2000+ NVPS on a low powered
+VM and are 7x faster than a loading a simple Perl script in a UserParameter for
+the same workload.
 
 The following statistics were gathered using the included Dockerfile with the
 Zabbix agent restarted before each test. The test machine was a boot2docker VM
@@ -12,11 +13,17 @@ The key outcome sought was a like-for-like comparison between native agent keys
 and keys written in Go using g2z. Some penalty is expected using the Go
 framework and for the additional routing required for each key request.
 
-In reality, intense monitoring templates (1000 items every 30 seconds) might
-impose 20-30 NVPS while typically monitoring (200 items every 5 minutes) are
-less than 1 NVPS. The tests below push the agent to its limits with an
-unrealistic load of 2000+ NVPS. In short, a loss of 100-500 NVPS is not an
-issue in a production environment. 
+
+## Summary
+
+Item                                                  | NVPS
+------------------------------------------------------|-----
+[agent.ping](#native-key-agentping) (builtin C)       | 2917
+[agent.version](#native-key-agentversion) (builtin C) | 2954
+[go.ping](#go-key-goping) (g2z module)                | 2929
+[go.version](#go-key-goversion) (g2z module)          | 2513
+[up.ping](#userparameter-upping) (/bin/echo)          | 487
+[perl.ping](#userparameter-perlping) (Perl script)    | 396
 
 
 ## Native key: agent.ping
