@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-// g2z provides Go bindings for creating a native Zabbix module.
 package g2z
 
 // item is a go wrapper for a C.ZBX_METRIC
