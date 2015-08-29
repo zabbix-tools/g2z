@@ -33,14 +33,17 @@ advantage of the c-shared build mode introduced in Go v1.5.0.
 		"strings"
 	)
 
+	// mandatory library entry point, although it is never called.
 	func main() {
 	    panic("THIS_SHOULD_NEVER_HAPPEN")
 	}
 
+	// mandatory initialization function
 	func init() {
 	    g2z.RegisterStringItem("go.echo", "Hello world!", Echo)
 	}
 
+	// handler for 'go.echo' item
 	func Echo(request *g2z.AgentRequest) (string, error) {
 	    return strings.Join(request.Params, " "), nil
 	}

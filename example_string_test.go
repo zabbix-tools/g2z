@@ -10,7 +10,7 @@ func ExampleRegisterStringItem() {
 }
 
 func init() {
-	g2z.RegisterStringItem("go.echo", "Hello world!", Echo)
+	g2z.RegisterStringItem("go.echo", "Hello,world", Echo)
 }
 
 func Echo(request *g2z.AgentRequest) (string, error) {

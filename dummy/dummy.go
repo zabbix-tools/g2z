@@ -54,13 +54,13 @@ func init() {
 	g2z.RegisterDiscoveryItem("go.cpu.discovery", "", DiscoverCpus)
 }
 
-// InitModule is a InitHandlerFunc which simply add an entry to the Zabbix log.
+// InitModule is a InitHandlerFunc which simply adds an entry to the Zabbix log.
 func InitModule() error {
 	g2z.LogInfof("Dummy module initialized")
 	return nil
 }
 
-// UninitModule is an UninitHandlerFunc which simply add an entry to the Zabbix log.
+// UninitModule is an UninitHandlerFunc which simply adds an entry to the Zabbix log.
 func UninitModule() error {
 	g2z.LogInfof("Dummy module uninitialized")
 	return nil
@@ -107,7 +107,7 @@ func Random(request *g2z.AgentRequest) (float64, error) {
 }
 
 // DiscoveryCpus is a DiscoveryItemHandlerFunc for key `go.cpu.discovery` which returns JSON
-// encoding discovery data for all CPUs identified on the host.
+// encoded discovery data for all CPUs identified on the host in /proc/cpuinfo.
 func DiscoverCpus(request *g2z.AgentRequest) (g2z.DiscoveryData, error) {
 	// init discovery data
 	d := make(g2z.DiscoveryData, 0)
