@@ -20,7 +20,10 @@ all: dummy.so
 dummy.so:
 	go build -x -buildmode=c-shared -o dummy.so
 
+test:
+	go test -v
+
 clean:
 	go clean
 
-.PHONY: all clean
+.PHONY: all test clean
