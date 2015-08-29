@@ -26,6 +26,8 @@ This project aims to deliver the best of both worlds; fast, native C libraries,
 written in an easier high-level language (Go), with all the dependencies bundled
 into a standalone library file.
 
+The findings of some performance tests are listed in [performance.md](performance.md).
+
 
 ## Requirements
 
