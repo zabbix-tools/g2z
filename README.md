@@ -41,19 +41,21 @@ The findings of some performance tests are listed in [performance.md](performanc
 Once you have installed [Go lang](https://golang.org/doc/install), and
 configured your `$GOPATH`, simply run:
 
-```bash
-$ go get github.com/cavaliercoder/g2z
-```
+	$ go get github.com/cavaliercoder/g2z
 
 
 ## Usage
 
-Here's a quick high-level run down on how to create a Zabbix agent module. An
+Here's a quick high-level run down on how to create a Zabbix agent module. For 
+further guidance, there is an
 [example module](https://github.com/cavaliercoder/g2z/blob/master/dummy/dummy.go)
-is included with the g2z sources which mimics the dummy C module published by
-Zabbix.
+included with the g2z sources which mimics the dummy C module published by
+Zabbix and full API documentation available on
+[godoc.org](http://godoc.org/github.com/cavaliercoder/g2z).
 
-To begin, create a mandatory `main()` entry point to your library and import g2z:
+To begin, create a mandatory `main()` entry point to your library and import
+g2z. The `main()` function will never be called but is a requirement for
+building shared libraries in Go.
 
 ```go
 package main
@@ -77,7 +79,10 @@ func Echo(request *g2z.AgentRequest) (string, error) {
 
 ```
 
-Create an `init()` function to register your functions as agent item keys:
+Create an `init()` function to register your functions as agent item keys. The
+`init()` function is executed by the Go runtime when your module is loaded into
+Zabbix via `dlopen()`. You should not execute any other calls in this function,
+other than registering your items and init/uninit handlers.
 
 ```go
 func init() {
@@ -85,6 +90,10 @@ func init() {
 }
 
 ```
+
+There are a few different item types you may register. Each requires an agent
+item key name, some test parameters and a handler function to Zabbix to call
+when it receives a request for the registered item key.
 
 Compile your project with:
 

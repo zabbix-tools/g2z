@@ -2,7 +2,7 @@
 
 TL;DR: Go modules seem to perform on par with C modules with a margin of error
 for implementation differences. They hammer through 2000+ NVPS on a low powered
-VM and are 7x faster than a loading a simple Perl script in a UserParameter for
+VM and are 7x faster than loading a simple Perl script in a UserParameter for
 the same workload.
 
 The following statistics were gathered using the included Dockerfile with the
