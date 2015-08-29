@@ -17,13 +17,13 @@
 
 all: dummy.so
 
-dummy.so:
+dummy.so: dummy.go
 	go build -x -buildmode=c-shared -o dummy.so
 
 test:
-	go test -v
+	go test -x -v
 
 clean:
-	go clean
+	go clean -i -x
 
 .PHONY: all test clean

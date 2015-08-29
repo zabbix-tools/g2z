@@ -15,13 +15,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-all: dummy/dummy.so
+all: g2z dummy
 
-dummy/dummy.so: g2z.go module.go lld.go log.go router.go log.h module.h zbxtypes.h dummy/dummy.go
-	cd dummy && go build -x -buildmode=c-shared -o dummy.so
+g2z: g2z.go darwin.go doc.go linux.go log.go lld.go module.go router.go
+	go build -x
+
+dummy:
+	cd dummy && $(MAKE)
 
 clean:
-	rm -f g2z.so g2z.h
+	go clean -i -x
+	rm -vf g2z.h
+
+clean-all: clean
 	cd dummy && $(MAKE) clean
 
 docker-build:
@@ -29,10 +35,8 @@ docker-build:
 
 docker-run: docker-build
 	docker run --rm -it \
-		-p 6060:6060 \
-		-p 10050:10050 \
 		-v $(PWD):/usr/src/g2z \
 		-w /usr/src/g2z \
 		cavaliercoder/g2z
 
-.PHONY: all clean docker-build docker-run
+.PHONY: all g2z dummy clean clean-all docker-build docker-run

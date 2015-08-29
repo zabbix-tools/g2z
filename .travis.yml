@@ -3,4 +3,4 @@ language: go
 go:
     - 1.5
 
-script: make && cd dummy && make test
+script: cd dummy && make test && make
