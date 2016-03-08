@@ -27,11 +27,17 @@ clean:
 	go clean -i -x
 	rm -vf g2z.h
 
-clean-all: clean
+clean-dummy:
 	cd dummy && $(MAKE) clean
 
+clean-all: clean clean-dummy
+	
 docker-build:
-	docker build -t cavaliercoder/g2z .
+	docker build \
+		--build-arg "http_proxy=$(http_proxy)" \
+		--build-arg "https_proxy=$(https_proxy)" \
+		--build-arg "no_proxy=$(no_proxy)" \
+		-t cavaliercoder/g2z .
 
 docker-run: docker-build
 	docker run --rm -it \
@@ -40,4 +46,4 @@ docker-run: docker-build
 		--privileged \
 		cavaliercoder/g2z
 
-.PHONY: all g2z dummy clean clean-all docker-build docker-run
+.PHONY: all g2z dummy clean clean-dummy clean-all docker-build docker-run
