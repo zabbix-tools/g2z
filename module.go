@@ -21,6 +21,7 @@ package g2z
 
 /*
 // zabbix agent headers
+#include <stdlib.h>
 #include <stdint.h>
 #include "module.h"
 
@@ -29,6 +30,20 @@ typedef int (*agent_item_handler)(AGENT_REQUEST*, AGENT_RESULT*);
 
 // item callback router function defined in router.go
 int route_item(AGENT_REQUEST *request, AGENT_RESULT *result);
+
+// create new metric list
+static ZBX_METRIC *new_metric_list(const size_t n) {
+	return (ZBX_METRIC*)calloc(sizeof(ZBX_METRIC), n + 1);
+}
+
+// append a metric to a metric list
+static void append_metric(ZBX_METRIC *list, const ZBX_METRIC *n) {
+	while(NULL != list->key)
+		list++;
+
+	memcpy(list, n, sizeof(ZBX_METRIC));
+}
+
 */
 import "C"
 
@@ -101,17 +116,17 @@ func zbx_module_item_list() *C.ZBX_METRIC {
 	router := C.agent_item_handler(unsafe.Pointer(C.route_item))
 
 	// create null-terminated array of C.ZBX_METRICS
-	i := 0
-	metrics := make([]C.ZBX_METRIC, len(itemHandlers)+1)
+	metrics := C.new_metric_list(C.size_t(len(itemHandlers))) // never freed
 	for _, item := range itemHandlers {
-		metrics[i] = C.ZBX_METRIC{
+		m := C.ZBX_METRIC{
 			key:        C.CString(item.Key), // freed by Zabbix
 			flags:      C.CF_HAVEPARAMS,
 			function:   router,
 			test_param: C.CString(item.TestParams), // freed by Zabbix
-		}
-		i++
+		} // freed by Go GC
+
+		C.append_metric(metrics, &m)
 	}
 
-	return &metrics[0]
+	return metrics
 }
