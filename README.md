@@ -1,4 +1,7 @@
-# g2z - Zabbix module adapter for Go [![GoDoc](https://godoc.org/github.com/cavaliercoder/g2z?status.svg)](http://godoc.org/github.com/cavaliercoder/g2z) [![Build Status](https://travis-ci.org/cavaliercoder/g2z.svg?branch=master)](https://travis-ci.org/cavaliercoder/g2z)
+# g2z
+
+*Zabbix module adapter for Go*
+[![GoDoc](https://godoc.org/github.com/cavaliercoder/g2z?status.svg)](http://godoc.org/github.com/cavaliercoder/g2z) [![Build Status](https://travis-ci.org/cavaliercoder/g2z.svg?branch=master)](https://travis-ci.org/cavaliercoder/g2z)
 
 This project provides [Go](https://golang.org/) bindings for creating native
 Zabbix modules.
@@ -18,7 +21,7 @@ script interpreter such as Perl or Ruby and their dependent framework modules.
 
 Loadable Modules offer a significant performance increase (being native C
 libraries) and *reduce* the overhead of dependencies. Unfortunately, modules
-are rarely adopted because the effort and expertice required to write one in C
+are rarely adopted because the effort and expertise required to write one in C
 is a great deal more than writing a script in a higher level language like
 Perl.
 
@@ -38,10 +41,18 @@ The findings of some performance tests are listed in [performance.md](performanc
 
 ## Installation
 
-Once you have installed [Go lang](https://golang.org/doc/install), and
-configured your `$GOPATH`, simply run:
+The module APIs of Zabbix v2 and v3 are currently
+[incompatible](https://support.zabbix.com/browse/ZBX-10428). As a result, you
+must install and import the appropriate version of g2z for your targeted Zabbix
+version.
 
-	$ go get github.com/cavaliercoder/g2z
+For Zabbix v2.X:
+
+	$ go get gopkg.in/cavaliercoder/g2z.v2
+
+For Zabbix v3.X:
+
+	$ go get gopkg.in/cavaliercoder/g2z.v3
 
 
 ## Usage
