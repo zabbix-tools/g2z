@@ -7,6 +7,12 @@
 This project provides [Go](https://golang.org/) bindings for creating native
 Zabbix modules.
 
+__WARNING:___ Please see [issue #5](https://github.com/cavaliercoder/g2z/issues/5)
+before making use of this library. Single threaded workloads are fine but any
+use of go-routines/threads (or APIs which make use of threads) will not work
+and probably never will. This is due to irreconcilable architectural differences between the
+Zabbix agent and Go runtime (sad face...).
+
 Zabbix modules are an effective way of extending the Zabbix agent and server to
 monitor resources which are not natively supported by Zabbix. 
 
