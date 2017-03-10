@@ -27,6 +27,7 @@
 #define ZBX_MODULE_OK	0
 #define ZBX_MODULE_FAIL	-1
 
+#define ZBX_MODULE_API_VERSION	2
 #define ZBX_MODULE_API_VERSION_ONE	1
 
 #define get_rkey(request)		(request)->key
