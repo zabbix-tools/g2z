@@ -1,6 +1,6 @@
 /*
 ** Zabbix
-** Copyright (C) 2001-2014 Zabbix SIA
+** Copyright (C) 2001-2016 Zabbix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
+#include <string.h>
+
 #ifndef ZABBIX_MODULE_H
 #define ZABBIX_MODULE_H
 
@@ -25,9 +27,12 @@
 #define ZBX_MODULE_OK	0
 #define ZBX_MODULE_FAIL	-1
 
+#define ZBX_MODULE_API_VERSION	2
 #define ZBX_MODULE_API_VERSION_ONE	1
 
-#define get_rparam(request, num)	(request->nparam > num ? request->params[num] : NULL)
+#define get_rkey(request)		(request)->key
+#define get_rparams_num(request)	(request)->nparam
+#define get_rparam(request, num)	((request)->nparam > num ? (request)->params[num] : NULL)
 
 /* flags for command */
 #define CF_HAVEPARAMS		0x01	/* item accepts either optional or mandatory parameters */
@@ -58,28 +63,11 @@ typedef struct
 {
 	char		*value;
 	char		*source;
-	zbx_uint64_t	lastlogsize;
 	int		timestamp;
 	int		severity;
 	int		logeventid;
-	int		mtime;
 }
 zbx_log_t;
-
-/* agent return structure */
-typedef struct
-{
-	int	 	type;
-	zbx_uint64_t	ui64;
-	double		dbl;
-	char		*str;
-	char		*text;
-	char		*msg;
-
-	/* null-terminated list of pointers */
-	zbx_log_t	**logs;
-}
-AGENT_RESULT;
 
 /* agent result types */
 #define AR_UINT64	0x01
@@ -88,6 +76,22 @@ AGENT_RESULT;
 #define AR_TEXT		0x08
 #define AR_LOG		0x10
 #define AR_MESSAGE	0x20
+#define AR_META		0x40
+
+/* agent return structure */
+typedef struct
+{
+	zbx_uint64_t	lastlogsize;	/* meta information */
+	zbx_uint64_t	ui64;
+	double		dbl;
+	char		*str;
+	char		*text;
+	char		*msg;		/* possible error message */
+	zbx_log_t	*log;
+	int	 	type;		/* flags: see AR_* above */
+	int		mtime;		/* meta information */
+}
+AGENT_RESULT;
 
 /* SET RESULT */
 
@@ -121,7 +125,7 @@ AGENT_RESULT;
 #define SET_LOG_RESULT(res, val)		\
 (						\
 	(res)->type |= AR_LOG,			\
-	(res)->logs = (zbx_log_t **)(val)	\
+	(res)->log = (zbx_log_t *)(val)		\
 )
 
 /* NOTE: always allocate new memory for val! DON'T USE STATIC OR STACK MEMORY!!! */
