@@ -65,7 +65,7 @@ type AgentRequest struct {
 
 //export zbx_module_api_version
 func zbx_module_api_version() int {
-	return C.ZBX_MODULE_API_VERSION_ONE
+	return C.ZBX_MODULE_API_VERSION
 }
 
 //export zbx_module_init
