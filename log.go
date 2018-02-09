@@ -32,8 +32,8 @@ static void g2z_log(int level, const char *format)
 	void (*fptr)(int, const char*, ...);
 
 	// check if zabbix_log() is resolvable
-    if ((fptr = zabbix_log) != 0)
-        (*fptr)(level, format);
+	if ((fptr = zabbix_log) != 0)
+		(*fptr)(level, format);
 }
 */
 import "C"

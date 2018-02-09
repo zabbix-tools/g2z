@@ -25,13 +25,15 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/cavaliercoder/g2z"
 	"math/rand"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/cavaliercoder/g2z"
 )
 
 // main is a mandatory entry point, although it is never called.
@@ -47,6 +49,9 @@ func main() {
 func init() {
 	g2z.RegisterInitHandler(InitModule)
 	g2z.RegisterUninitHandler(UninitModule)
+
+	g2z.RegisterStringItem("go.maxprocs", "", MaxProcs)
+	g2z.RegisterUint64Item("go.get", "", Get)
 
 	g2z.RegisterUint64Item("go.ping", "", Ping)
 	g2z.RegisterStringItem("go.echo", "Hello,world!", Echo)
@@ -65,6 +70,20 @@ func InitModule() error {
 func UninitModule() error {
 	g2z.LogInfof("Dummy module uninitialized")
 	return nil
+}
+
+func MaxProcs(request *g2z.AgentRequest) (string, error) {
+	return fmt.Sprintf("[%d] GOMAXPROCS=%d", os.Getpid(), runtime.GOMAXPROCS(-1)), nil
+}
+
+func Get(request *g2z.AgentRequest) (uint64, error) {
+	g2z.LogInfof("Getting from PID: %v", os.Getpid())
+	resp, err := http.Get("https://example.com/")
+	if err != nil {
+		return 0, err
+	}
+
+	return uint64(resp.StatusCode), nil
 }
 
 // Ping is a Uint64ItemHandlerFunc for key `go.ping` which simply returns 1.

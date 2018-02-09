@@ -15,12 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-FROM golang:1.6
+FROM golang:1.9
 
 # install Zabbix agent
 RUN \
-    wget -q http://repo.zabbix.com/zabbix/2.2/debian/pool/main/z/zabbix-release/zabbix-release_2.2-1+wheezy_all.deb && \
-    dpkg -i zabbix-release_2.2-1+wheezy_all.deb && \
+    wget -q http://repo.zabbix.com/zabbix/3.4/debian/pool/main/z/zabbix-release/zabbix-release_3.4-1+stretch_all.deb&& \
+    dpkg -i zabbix-release_3.4-1+stretch_all.deb && \
     apt-get update -y && \
     apt-get install -y zabbix-agent zabbix-get zabbix-sender && \
     mkdir /var/run/zabbix && \

@@ -1,6 +1,6 @@
 /*
 ** Zabbix
-** Copyright (C) 2001-2016 Zabbix SIA
+** Copyright (C) 2001-2017 Zabbix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-#include <sys/types.h>
 #ifndef ZABBIX_TYPES_H
 #define ZABBIX_TYPES_H
 
@@ -61,7 +60,9 @@
 #	define alloca		_alloca
 
 #	ifndef uint32_t
-#		define uint32_t	__int32
+typedef unsigned __int32	zbx_uint32_t;
+#	else
+typedef uint32_t		zbx_uint32_t;
 #	endif
 
 #	ifndef PATH_SEPARATOR
@@ -127,6 +128,8 @@ typedef __int64	zbx_offset_t;
 #			define ZBX_FS_X64	"%llx"
 #		endif
 #	endif
+
+typedef uint32_t	zbx_uint32_t;
 
 #	ifndef PATH_SEPARATOR
 #		define PATH_SEPARATOR	'/'

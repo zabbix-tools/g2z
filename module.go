@@ -20,16 +20,18 @@
 package g2z
 
 /*
-// zabbix agent headers
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
+
+// zabbix agent headers
 #include "module.h"
 
 // go binding for a pointer to an agent item callback
 typedef int (*agent_item_handler)(AGENT_REQUEST*, AGENT_RESULT*);
 
 // item callback router function defined in router.go
-int route_item(AGENT_REQUEST *request, AGENT_RESULT *result);
+int dispatch(AGENT_REQUEST *request, AGENT_RESULT *result);
 
 // create new metric list
 static ZBX_METRIC *new_metric_list(const size_t n) {
@@ -42,6 +44,10 @@ static void append_metric(ZBX_METRIC *list, const ZBX_METRIC *n) {
 		list++;
 
 	memcpy(list, n, sizeof(ZBX_METRIC));
+}
+
+void __attribute__(()) myinit() {
+	printf("init()\n");
 }
 
 */
@@ -61,6 +67,11 @@ type AgentRequest struct {
 	// Params is a slice of strings containing each parameter passed in the agent request for the
 	// specified key (E.g. `dummy.echo[<param0>,<param1>]`)
 	Params []string
+}
+
+func init() {
+	// Set GOMAXPROCS=1 so the runtime can survive when Zabbix forks
+	runtime.GOMAXPROCS(1)
 }
 
 //export zbx_module_api_version
@@ -113,7 +124,7 @@ func zbx_module_item_list() *C.ZBX_METRIC {
 	LogDebugf("Registering %d item handlers", len(itemHandlers))
 
 	// route all item key calls through route_item()
-	router := C.agent_item_handler(unsafe.Pointer(C.route_item))
+	router := C.agent_item_handler(unsafe.Pointer(C.dispatch))
 
 	// create null-terminated array of C.ZBX_METRICS
 	metrics := C.new_metric_list(C.size_t(len(itemHandlers))) // never freed

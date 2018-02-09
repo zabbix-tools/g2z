@@ -36,10 +36,12 @@ import (
 	"fmt"
 )
 
-// route_item is the entry point for all registered items.
+// dispatch is the entry point for all registered items and is responsible for
+// dispatching the AGENT_REQUEST to the associated Go function and marshalling
+// the returned value back to the Zabbix agent.
 //
-//export route_item
-func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
+//export dispatch
+func dispatch(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 	// marshall a C.AGENT_RESULT to g2z.AgentRequest
 	req := &AgentRequest{
 		Key:    C.GoString(request.key),
@@ -62,43 +64,43 @@ func route_item(request *C.AGENT_REQUEST, result *C.AGENT_RESULT) C.int {
 	switch item.Callback.(type) {
 	case StringItemHandlerFunc:
 		LogDebugf("Calling StringItemHandlerFunc for key: %s", req.Key)
-		if v, err := item.Callback.(StringItemHandlerFunc)(req); err != nil {
+		v, err := item.Callback.(StringItemHandlerFunc)(req)
+		if err != nil {
 			setMessageResult(result, err.Error())
 			return C.SYSINFO_RET_FAIL
-		} else {
-			result._type = C.AR_STRING
-			result.str = C.CString(v) // freed by Zabbix
 		}
+		result._type = C.AR_STRING
+		result.str = C.CString(v) // freed by Zabbix
 
 	case Uint64ItemHandlerFunc:
 		LogDebugf("Calling Uint64ItemHandlerFunc for key: %s", req.Key)
-		if v, err := item.Callback.(Uint64ItemHandlerFunc)(req); err != nil {
+		v, err := item.Callback.(Uint64ItemHandlerFunc)(req)
+		if err != nil {
 			setMessageResult(result, err.Error())
 			return C.SYSINFO_RET_FAIL
-		} else {
-			result._type = C.AR_UINT64
-			result.ui64 = C.uint64_t(v)
 		}
+		result._type = C.AR_UINT64
+		result.ui64 = C.uint64_t(v)
 
 	case DoubleItemHandlerFunc:
 		LogDebugf("Calling DoubleItemHandlerFunc for key: %s", req.Key)
-		if v, err := item.Callback.(DoubleItemHandlerFunc)(req); err != nil {
+		v, err := item.Callback.(DoubleItemHandlerFunc)(req)
+		if err != nil {
 			setMessageResult(result, err.Error())
 			return C.SYSINFO_RET_FAIL
-		} else {
-			result._type = C.AR_DOUBLE
-			result.dbl = C.double(v)
 		}
+		result._type = C.AR_DOUBLE
+		result.dbl = C.double(v)
 
 	case DiscoveryItemHandlerFunc:
 		LogDebugf("Calling DiscoveryItemHandlerFunc for key: %s", req.Key)
-		if v, err := item.Callback.(DiscoveryItemHandlerFunc)(req); err != nil {
+		v, err := item.Callback.(DiscoveryItemHandlerFunc)(req)
+		if err != nil {
 			setMessageResult(result, err.Error())
 			return C.SYSINFO_RET_FAIL
-		} else {
-			result._type = C.AR_STRING
-			result.str = C.CString(v.Json()) // freed by Zabbix
 		}
+		result._type = C.AR_STRING
+		result.str = C.CString(v.Json()) // freed by Zabbix
 	}
 
 	return C.SYSINFO_RET_OK

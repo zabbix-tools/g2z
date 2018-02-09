@@ -120,6 +120,13 @@ Test your item keys with `zabbix_agentd -p` or
 [zabbix_agent_bench](https://github.com/cavaliercoder/zabbix_agent_bench).
 
 
+## Constraints
+
+- `GOMAXPROCS` must always be set to `1`. This is because the Go runtime is
+  multi-threaded, while Zabbix is not. Setting `GOMAXPROCS` constrains the Go
+  runtime to a single thread, mitigating a whole bunch of unpredictable
+  behaviour when the parent Zabbix process forks.
+
 ## License
 
 g2z - Zabbix module adapter for Go
