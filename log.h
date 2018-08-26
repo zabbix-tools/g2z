@@ -52,6 +52,25 @@ typedef enum
 }
 zbx_err_codes_t;
 
+typedef enum
+{
+	ZBX_TASK_START = 0,
+	ZBX_TASK_PRINT_SUPPORTED,
+	ZBX_TASK_TEST_METRIC,
+	ZBX_TASK_SHOW_USAGE,
+	ZBX_TASK_SHOW_VERSION,
+	ZBX_TASK_SHOW_HELP,
+#ifdef _WINDOWS
+	ZBX_TASK_INSTALL_SERVICE,
+	ZBX_TASK_UNINSTALL_SERVICE,
+	ZBX_TASK_START_SERVICE,
+	ZBX_TASK_STOP_SERVICE
+#else
+	ZBX_TASK_RUNTIME_CONTROL
+#endif
+}
+zbx_task_t;
+
 typedef struct
 {
 	zbx_task_t	task;
