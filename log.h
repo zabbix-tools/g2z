@@ -52,6 +52,14 @@ typedef enum
 }
 zbx_err_codes_t;
 
+typedef struct
+{
+	zbx_task_t	task;
+	int		flags;
+	int		data;
+}
+ZBX_TASK_EX;
+
 #ifdef HAVE___VA_ARGS__
 #	define zabbix_log(level, fmt, ...) __zbx_zabbix_log(level, ZBX_CONST_STRING(fmt), ##__VA_ARGS__)
 #else
