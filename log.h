@@ -1,6 +1,6 @@
 /*
 ** Zabbix
-** Copyright (C) 2001-2014 Zabbix SIA
+** Copyright (C) 2001-2018 Zabbix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -25,12 +25,20 @@
 #define LOG_LEVEL_ERR		2
 #define LOG_LEVEL_WARNING	3
 #define LOG_LEVEL_DEBUG		4
+#define LOG_LEVEL_TRACE		5
 
 #define LOG_LEVEL_INFORMATION	127	/* printing in any case no matter what level set */
 
 #define LOG_TYPE_UNDEFINED	0
-#define LOG_TYPE_SYSLOG		1
+#define LOG_TYPE_SYSTEM		1
 #define LOG_TYPE_FILE		2
+#define LOG_TYPE_CONSOLE	3
+
+#define ZBX_OPTION_LOGTYPE_SYSTEM	"system"
+#define ZBX_OPTION_LOGTYPE_FILE		"file"
+#define ZBX_OPTION_LOGTYPE_CONSOLE	"console"
+
+#define LOG_ENTRY_INTERVAL_DELAY	60	/* seconds */
 
 typedef enum
 {
@@ -44,32 +52,62 @@ typedef enum
 }
 zbx_err_codes_t;
 
-extern int	CONFIG_LOG_FILE_SIZE;
+typedef enum
+{
+	ZBX_TASK_START = 0,
+	ZBX_TASK_PRINT_SUPPORTED,
+	ZBX_TASK_TEST_METRIC,
+	ZBX_TASK_SHOW_USAGE,
+	ZBX_TASK_SHOW_VERSION,
+	ZBX_TASK_SHOW_HELP,
+#ifdef _WINDOWS
+	ZBX_TASK_INSTALL_SERVICE,
+	ZBX_TASK_UNINSTALL_SERVICE,
+	ZBX_TASK_START_SERVICE,
+	ZBX_TASK_STOP_SERVICE
+#else
+	ZBX_TASK_RUNTIME_CONTROL
+#endif
+}
+zbx_task_t;
 
-/* Type - 1 (syslog), 2 - file */
-int zabbix_open_log(int type,int level, const char *filename);
+typedef struct
+{
+	zbx_task_t	task;
+	int		flags;
+	int		data;
+}
+ZBX_TASK_EX;
 
 #ifdef HAVE___VA_ARGS__
 #	define zabbix_log(level, fmt, ...) __zbx_zabbix_log(level, ZBX_CONST_STRING(fmt), ##__VA_ARGS__)
 #else
 #	define zabbix_log __zbx_zabbix_log
-#endif /* HAVE___VA_ARGS__ */
-void zabbix_errlog(zbx_err_codes_t err, ...);
-void __zbx_zabbix_log(int level, const char *fmt, ...);
+#endif
 
-void zabbix_close_log();
-void zabbix_set_log_level(int level);
+int		zabbix_open_log(int type, int level, const char *filename, char **error);
+void		zabbix_errlog(zbx_err_codes_t err, ...);
+void		__zbx_zabbix_log(int level, const char *fmt, ...);
+void		zabbix_close_log(void);
+#ifndef _WINDOWS
+int		zabbix_increase_log_level(void);
+int		zabbix_decrease_log_level(void);
+const char	*zabbix_get_log_level_string(void);
+#endif
+int		zabbix_check_log_level(int level);
 
-char *zbx_strerror(int errnum);
-char *strerror_from_system(unsigned long error);
+char		*zbx_strerror(int errnum);
+char		*strerror_from_system(unsigned long error);
+
 #ifdef _WINDOWS
-char *strerror_from_module(unsigned long error, LPCTSTR module);
+char		*strerror_from_module(unsigned long error, const wchar_t *module);
 #endif
 
-#if defined(_WINDOWS)
-#	define redirect_std(filename)
-#else
-	void redirect_std(const char *filename);
-#endif
+void		zbx_redirect_stdio(const char *filename);
+
+void		zbx_handle_log(void);
+
+int		zbx_get_log_type(const char *logtype);
+int		zbx_validate_log_parameters(ZBX_TASK_EX *task);
 
 #endif
